@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: '{{ project_name }}'
+      POSTGRES_PASSWORD: '{{ secret_key|slugify }}'
+
+  cache:
+    image: memcached
+
+  assets:
+    build:
+      dockerfile: docker/development/Dockerfile.assets
+      context: .
+
+    volumes:
+      - ./project/assets:/app/project/assets/
+
+    command: npm run watch
+
+  manage:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile.web
+
+    entrypoint: python manage.py
+
+    volumes:
+      - ./:/code/
+
+  web:
+    extends:
+      service: manage
+    command: runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    links:
+      - db
+      - cache
+      - assets

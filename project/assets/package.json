@@ -1,0 +1,27 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Webpack project configuration",
+  "main": "webpack.config.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "webpack --env.env=production --display-modules --profile",
+    "dev": "BABEL_ENV=development node devServer.js",
+    "watch": "BABEL_ENV=development webpack --display-modules --profile"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "node-sass": "^4.5.2",
+    "resolve-url-loader": "^2.0.2",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.16.1",
+    "webpack": "^2.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+  db:
+    restart: always
+    image: postgres
+    environment:
+      POSTGRES_USER: '{{ project_name }}'
+      POSTGRES_PASSWORD: '{{ secret_key|slugify }}'
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+
+  cache:
+    restart: always
+    image: redis
+
+  manage:
+    image: '{{ project_name }}/projects:{{ project_name }}-app'
+    environment:
+      - PRODUCTION=1
+    entrypoint: python manage.py
+    volumes:
+      - ./logs/:/app/logs/
+
+  web:
+    restart: always
+    extends:
+      service: manage
+
+    entrypoint: bash /app/docker/production/web/service.web.sh
+    links:
+      - db
+      - cache
+
+  nginx:
+    restart: always
+    image: '{{ project_name }}/projects:{{ project_name }}-app'
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    volumes:
+      - ./media/:/app/media/
+      - ./logs/nginx/:/var/log/nginx/
+    ports:
+      - 80:80
+
+    links:
+      - web
